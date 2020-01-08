@@ -137,7 +137,9 @@ export default function AppointmentList({doctor, date}) {
           ))}
           <TableRow key={appointments.length}>
             <TableCell>{appointments.length+1}</TableCell>
-            <TableCell><TextField label='First Name' onChange={setPatientFirstName} /><TextField label='Last Name' onChange={setPatientLastName} /></TableCell>
+            <TableCell>
+              <TextField label='First Name' onChange={setPatientFirstName} />
+              <TextField label='Last Name' onChange={setPatientLastName} /></TableCell>
             <TableCell>
               <TextField
                 type='time'
