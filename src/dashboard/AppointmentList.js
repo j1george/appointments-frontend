@@ -84,8 +84,6 @@ export default function AppointmentList({doctor, date}) {
 
   const addAppointment = () => {
     (async () => {
-      console.log(patient, appointmentTime, appointmentType);
-
       let result = await axios.get(`http://138.68.16.40:3000/v1/patients?first_name=${patient.first_name}&last_name=${patient.last_name}`);
 
       const patientExists = result.data.length > 0;
@@ -124,7 +122,7 @@ export default function AppointmentList({doctor, date}) {
             <TableCell>Name</TableCell>
             <TableCell>Time</TableCell>
             <TableCell>Type</TableCell>
-               <TableCell align="right"></TableCell>
+            <TableCell align="right"></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -139,8 +137,15 @@ export default function AppointmentList({doctor, date}) {
           ))}
           <TableRow key={appointments.length}>
             <TableCell>{appointments.length+1}</TableCell>
-            <TableCell><TextField label='First Name' onChange={setPatientFirstName} /><TextField label='Last Name' onChange={setPatientLastName} /></TableCell>
-            <TableCell><TextField label='e.g. 9:00AM' onChange={onSetAppointmentTime} /></TableCell>
+            <TableCell>
+              <TextField label='First Name' onChange={setPatientFirstName} />
+              <TextField label='Last Name' onChange={setPatientLastName} /></TableCell>
+            <TableCell>
+              <TextField
+                type='time'
+                onChange={onSetAppointmentTime} 
+              />
+            </TableCell>
             <TableCell>
               <Select
                 value={appointmentType}

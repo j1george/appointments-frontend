@@ -152,7 +152,11 @@ export default function Dashboard() {
               {/* Current Doctor */}
               <Grid item xs={12}>
                 <DoctorInfo doctor={doctor} />
-                <TextField value={date ? date : ''} type="date" onChange={getDateInput}/>
+                <TextField
+                  value={date ? date : ''}
+                  type="date"
+                  onChange={getDateInput}
+                />
               </Grid>
               {/* Appointments for day */}
               { date ?
