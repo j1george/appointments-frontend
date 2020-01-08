@@ -122,7 +122,7 @@ export default function AppointmentList({doctor, date}) {
             <TableCell>Name</TableCell>
             <TableCell>Time</TableCell>
             <TableCell>Type</TableCell>
-               <TableCell align="right"></TableCell>
+            <TableCell align="right"></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
