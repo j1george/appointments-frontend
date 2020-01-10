@@ -31,7 +31,7 @@ export default function AppointmentList({doctor, date}) {
   };
   useEffect(() => {
     updateAppointments();
-  });
+  }, []);
 
   const [visitTypes, setVisitTypes] = React.useState([
     'Follow Up',
@@ -100,6 +100,7 @@ export default function AppointmentList({doctor, date}) {
         visitType: appointmentType
       })
 
+      console.log('hello')
       updateAppointments();
       setAppointmentType('');
     })();
