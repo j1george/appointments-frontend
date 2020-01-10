@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import axios from 'axios';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -9,12 +9,25 @@ import TextField from '@material-ui/core/TextField';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button'
+import Paper from '@material-ui/core/Paper';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
 
 axios.defaults.baseURL = 'http://138.68.16.40:3000'
 axios.defaults.headers.post['Content-Type'] ='application/json;charset=utf-8';
 axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
 
-export default function AppointmentList({doctor, date}) {
+const useStyles = makeStyles(theme => ({
+  paper: {
+    padding: theme.spacing(2),
+    display: 'flex',
+    overflow: 'auto',
+    flexDirection: 'column',
+  },
+}));
+
+const AppointmentList = forwardRef(({doctor, date}, ref) => {
+  const classes = useStyles();
   const [appointments, setAppointments] = useState([]);
   const [patient, setPatient] = useState({
     first_name: '',
@@ -22,7 +35,11 @@ export default function AppointmentList({doctor, date}) {
   const [appointmentTime, setAppointmentTime] = useState('');
   const [appointmentType, setAppointmentType] = useState('');
 
-  const updateAppointments = async () => {
+  const updateAppointments = async (newDate) => {
+    if (newDate) {
+      date = newDate;
+    }
+    
     const url = `v1/appointments?doctor=${doctor.id}&date=${date.split(' ')[0]}`;
     let result = await axios(url);
     result.data = await Promise.all(result.data.map(async (item) => {
@@ -33,6 +50,13 @@ export default function AppointmentList({doctor, date}) {
     }))
     setAppointments(result.data);
   };
+
+  useImperativeHandle(ref, () => {
+    return {
+      updateAppointments: updateAppointments
+    }
+  });
+
   useEffect(() => {
     updateAppointments();
 
@@ -120,55 +144,61 @@ export default function AppointmentList({doctor, date}) {
   }
 
   return (
-    <React.Fragment>
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell>#</TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell>Time</TableCell>
-            <TableCell>Type</TableCell>
-            <TableCell align="right"></TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {appointments.map((row, index) => (
-            <TableRow key={row.id}>
-              <TableCell>{index+1}</TableCell>
-              <TableCell>{row.patientName}</TableCell>
-              <TableCell>{formatAMPM(new Date(row.date))}</TableCell>
-              <TableCell>{row.visit_type}</TableCell>
-              <TableCell align="right"><Button onClick={()=>{deleteAppointment(row.id)}} style={{color:'red'}}>x</Button></TableCell>
-            </TableRow>
-          ))}
-          <TableRow key={appointments.length}>
-            <TableCell>{appointments.length+1}</TableCell>
-            <TableCell>
-              <TextField label='First Name' onChange={setPatientFirstName} />
-              <TextField label='Last Name' onChange={setPatientLastName} /></TableCell>
-            <TableCell>
-              <TextField
-                type='time'
-                onChange={onSetAppointmentTime} 
-              />
-            </TableCell>
-            <TableCell>
-              <Select
-                value={appointmentType}
-                onChange={onSetAppointmentType}
-                inputProps={{
-                name: "agent",
-                  id: "age-simple"
-                }}
-              >
-                {visitTypes.map((value, index) => {
-                  return <MenuItem key={index} value={value}>{value}</MenuItem>;
-                })}
-              </Select></TableCell>
-            <TableCell align="right"><Button color='primary' style={{color:'gray'}} onClick={addAppointment}>+</Button></TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
-    </React.Fragment>
+    <Grid item xs={12}>
+      <Paper className={classes.paper}>
+        <React.Fragment>
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell>#</TableCell>
+                <TableCell>Name</TableCell>
+                <TableCell>Time</TableCell>
+                <TableCell>Type</TableCell>
+                <TableCell align="right"></TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {appointments.map((row, index) => (
+                <TableRow key={row.id}>
+                  <TableCell>{index+1}</TableCell>
+                  <TableCell>{row.patientName}</TableCell>
+                  <TableCell>{formatAMPM(new Date(row.date))}</TableCell>
+                  <TableCell>{row.visit_type}</TableCell>
+                  <TableCell align="right"><Button onClick={()=>{deleteAppointment(row.id)}} style={{color:'red'}}>x</Button></TableCell>
+                </TableRow>
+              ))}
+              <TableRow key={appointments.length}>
+                <TableCell>{appointments.length+1}</TableCell>
+                <TableCell>
+                  <TextField label='First Name' onChange={setPatientFirstName} />
+                  <TextField label='Last Name' onChange={setPatientLastName} /></TableCell>
+                <TableCell>
+                  <TextField
+                    type='time'
+                    onChange={onSetAppointmentTime} 
+                  />
+                </TableCell>
+                <TableCell>
+                  <Select
+                    value={appointmentType}
+                    onChange={onSetAppointmentType}
+                    inputProps={{
+                    name: "agent",
+                      id: "age-simple"
+                    }}
+                  >
+                    {visitTypes.map((value, index) => {
+                      return <MenuItem key={index} value={value}>{value}</MenuItem>;
+                    })}
+                  </Select></TableCell>
+                <TableCell align="right"><Button color='primary' style={{color:'gray'}} onClick={addAppointment}>+</Button></TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </React.Fragment>
+      </Paper>
+    </Grid>
   );
-}
+});
+
+export default AppointmentList;
