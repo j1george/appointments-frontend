@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -10,7 +10,6 @@ import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
 import Link from '@material-ui/core/Link';
 import DoctorList from './DoctorList';
 import DoctorInfo from './DoctorInfo';
@@ -100,18 +99,13 @@ const useStyles = makeStyles(theme => ({
     paddingTop: theme.spacing(4),
     paddingBottom: theme.spacing(4),
   },
-  paper: {
-    padding: theme.spacing(2),
-    display: 'flex',
-    overflow: 'auto',
-    flexDirection: 'column',
-  },
   fixedHeight: {
     height: 240,
   },
 }));
 
 export default function Dashboard() {
+  const ref = useRef(null);
   const classes = useStyles();
   
   const [doctor, setDoctor] = useState(null);
@@ -124,6 +118,9 @@ export default function Dashboard() {
 
   const getDateInput = (e) => {
     setDate(e.target.value);
+    if (ref.current) {
+      ref.current.updateAppointments(e.target.value)
+    }
   }
 
   return (
@@ -152,15 +149,15 @@ export default function Dashboard() {
               {/* Current Doctor */}
               <Grid item xs={12}>
                 <DoctorInfo doctor={doctor} />
-                <TextField value={date ? date : ''} type="date" onChange={getDateInput}/>
+                <TextField
+                  value={date ? date : ''}
+                  type="date"
+                  onChange={getDateInput}
+                />
               </Grid>
               {/* Appointments for day */}
               { date ?
-              <Grid item xs={12}>
-                <Paper className={classes.paper}>
-                  <AppointmentList doctor={doctor} date={date} />
-                </Paper>
-              </Grid>
+                <AppointmentList doctor={doctor} date={date} ref={ref} />
               : null}
             </Grid>
           : null}
