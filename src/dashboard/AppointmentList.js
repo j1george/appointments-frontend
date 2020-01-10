@@ -35,12 +35,14 @@ export default function AppointmentList({doctor, date}) {
   };
   useEffect(() => {
     updateAppointments();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const [visitTypes, setVisitTypes] = React.useState([
+  const visitTypes = [
     'Follow Up',
     'Consultation'
-  ]);
+  ];
 
   const formatAMPM = (date) => {
     var hours = date.getHours();
@@ -98,7 +100,7 @@ export default function AppointmentList({doctor, date}) {
         result = await axios.get(`v1/patients?first_name=${patient.first_name}&last_name=${patient.last_name}`);
       }
 
-      let x = await axios.post('v1/appointments', {
+      await axios.post('v1/appointments', {
         date: `${date} ${parseTime(appointmentTime)}`,
         patient: result.data[0].id,
         doctor: doctor.id,
