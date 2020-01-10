@@ -36,13 +36,6 @@ const useStyles = makeStyles(theme => ({
       backgroundColor: green[700],
     },
   },
-  fabProgress: {
-    color: green[500],
-    position: 'absolute',
-    top: -6,
-    left: -6,
-    zIndex: 1,
-  },
   buttonProgress: {
     color: green[500],
     position: 'absolute',
@@ -74,15 +67,17 @@ const AppointmentList = forwardRef(({doctor, date}, ref) => {
 
       const url = `v1/appointments?doctor=${doctor.id}&date=${date.split(' ')[0]}`;
       let result = await axios(url);
-      result.data = await Promise.all(result.data.map(async (item) => {
-        const res = await axios(`v1/patients/${item.patient}`);
+      if (result.data.map) {
+        result.data = await Promise.all(result.data.map(async (item) => {
+          const res = await axios(`v1/patients/${item.patient}`);
 
-        item.patientName = `${res.data[0].first_name} ${res.data[0].last_name}`
-        return item;
-      }))
-      setAppointments(result.data);
-      setSuccess(true);
-      setLoading(false);
+          item.patientName = `${res.data[0].first_name} ${res.data[0].last_name}`
+          return item;
+        }))
+        setAppointments(result.data);
+        setSuccess(true);
+        setLoading(false);
+      }
     }
   };
 
