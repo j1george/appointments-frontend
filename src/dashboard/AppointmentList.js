@@ -10,6 +10,10 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button'
 
+axios.defaults.baseURL = 'http://138.68.16.40:3000'
+axios.defaults.headers.post['Content-Type'] ='application/json;charset=utf-8';
+axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
+
 export default function AppointmentList({doctor, date}) {
   const [appointments, setAppointments] = useState([]);
   const [patient, setPatient] = useState({
@@ -19,10 +23,10 @@ export default function AppointmentList({doctor, date}) {
   const [appointmentType, setAppointmentType] = useState('');
 
   const updateAppointments = async () => {
-    const url = `http://138.68.16.40:3000/v1/appointments?doctor=${doctor.id}&date=${date.split(' ')[0]}`;
+    const url = `v1/appointments?doctor=${doctor.id}&date=${date.split(' ')[0]}`;
     let result = await axios(url);
     result.data = await Promise.all(result.data.map(async (item) => {
-      const res = await axios(`http://138.68.16.40:3000/v1/patients/${item.patient}`);
+      const res = await axios(`v1/patients/${item.patient}`);
 
       item.patientName = `${res.data[0].first_name} ${res.data[0].last_name}`
       return item;
@@ -84,23 +88,23 @@ export default function AppointmentList({doctor, date}) {
 
   const addAppointment = () => {
     (async () => {
-      let result = await axios.get(`http://138.68.16.40:3000/v1/patients?first_name=${patient.first_name}&last_name=${patient.last_name}`);
+      let result = await axios.get(`v1/patients?first_name=${patient.first_name}&last_name=${patient.last_name}`);
 
       const patientExists = result.data.length > 0;
 
       if (!patientExists) {
-        await axios.post('http://138.68.16.40:3000/v1/patients', {firstName: patient.first_name, lastName: patient.last_name});
-        result = await axios.get(`http://138.68.16.40:3000/v1/patients?first_name=${patient.first_name}&last_name=${patient.last_name}`);
+        await axios.post('v1/patients', {firstName: patient.first_name, lastName: patient.last_name});
+        
+        result = await axios.get(`v1/patients?first_name=${patient.first_name}&last_name=${patient.last_name}`);
       }
 
-      await axios.post('http://138.68.16.40:3000/v1/appointments', {
+      let x = await axios.post('v1/appointments', {
         date: `${date} ${parseTime(appointmentTime)}`,
         patient: result.data[0].id,
         doctor: doctor.id,
         visitType: appointmentType
-      })
-
-      console.log('hello')
+      });
+      
       updateAppointments();
       setAppointmentType('');
     })();
@@ -108,8 +112,7 @@ export default function AppointmentList({doctor, date}) {
 
   const deleteAppointment = (id) => {
     (async () => {
-      console.log(id);
-      await axios.delete(`http://138.68.16.40:3000/v1/appointments/${id}`);
+      await axios.delete(`v1/appointments/${id}`);
       updateAppointments();
     })();
   }
