@@ -10,4 +10,8 @@ jobs:
     steps:
       - checkout
       - run: npm install
+<<<<<<< HEAD
       - run: ssh -o StrictHostKeyChecking=no $DROPLET_USER@$DROPLET_IP 'cd /apps/appointments-frontend; git checkout master; git pull; npm run build; cp /build/* -r /var/www/appointments/html;'
+=======
+      - run: ssh -o StrictHostKeyChecking=no $DROPLET_USER@$DROPLET_IP 'cd ../apps/appointments-frontend; git checkout dev; git pull; npm run build; cp -a build/. /var/www/appointments/html;'
+>>>>>>> 8e56a7aee8077e38e6ea83cce83c545793f6c38c

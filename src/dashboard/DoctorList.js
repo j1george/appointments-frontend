@@ -5,12 +5,16 @@ import ListSubheader from '@material-ui/core/ListSubheader';
 import List from '@material-ui/core/List';
 import DoctorListItem from './DoctorListItem';
 
+axios.defaults.baseURL = 'http://138.68.16.40:3000'
+axios.defaults.headers.post['Content-Type'] ='application/json;charset=utf-8';
+axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
+
 export default function DoctorList({getDoctor}) {
   const [doctors, setDoctors] = useState([]);
 
   useEffect(() => {
     (async () => {
-      const url = 'http://138.68.16.40:3000/v1/doctors';
+      const url = 'v1/doctors';
       let result = await axios(url);
       setDoctors(result.data);
     })();
